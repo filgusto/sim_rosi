@@ -9,17 +9,17 @@
   # Velodyne processing flag
   # disable it for faster simulation (but no Velodyne data)
   # possible values: true, false.
-  velodyne_processing: true
+  velodyne_processing: false
 
   # Kinect processing flag
   # disable it for faster simulation (but no kinect data)
   # possible values: true, false.
-  kinect_processing: true
+  kinect_processing: false
 
   # Hokuyo processing flag
   # disable it for faster simulation (but no hokuyo data)
   # possible values: true, false.
-  hokuyo_processing: true
+  hokuyo_processing: false
 
   # Hokuyo drawing lines 
   # enable it for seeing hokuyo lines
@@ -30,11 +30,11 @@
   # Camera on UR5 tool processing flag
   # enable it for processing/publishing the ur5 tool cam
   # possible values: true, false
-  ur5toolCam_processing: true
+  ur5toolCam_processing: false
 
   # Fire enabling
   # allows to enable/disable the fire
-  fire_rendering: true
+  fire_rendering: false
 
   # Changes the kinect message header's time
   # Enable it for changing to sim.getSimulationTime()
