@@ -1,5 +1,3 @@
-
-
 class RosiMaster():
 
 	# rosi parameters
