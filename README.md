@@ -10,8 +10,6 @@ One may find more info about SBAI in www.sbai2019.com.br.
 Additionally, the content here may be beneficial for robotics classes. There is a complete mobile robot model with divers actuators and sensor fully communicating with the ROS framework and an industrial belt conveyor scenario. 
 Feel free to use it for spreading the robotics knowledge in your classes! :)
 
-We would like to thank Marc Freese and the Coppelia Robotics team for releasing the V-REP simulator for this challenge.
-Moreover, these noble gentlemen greatly contributed to this simulator: Amauri Coelho Ferraz, Raphael Pereira Figueiredo da Silva, and Wagner Ferreira Andrade.
 
 # DISCLAIMER
 
@@ -254,6 +252,13 @@ As a rule of thumb, all variables are mapped in the International System of Unit
 
 - `/ur5/jointsPosTargetCommand` - `<rosi_defy/ManipulatorJoints>` - Sets the UR-5 joints desired angular position. Each joint has a built-in PID controller. One may find more UR-5 info in [here](https://www.universal-robots.com/media/50588/ur5_en.pdf).
 
+## Thanks
+
+- We would like to thank **Marc Freese** and the Coppelia Robotics team for releasing the CoppeliaSim for RosiChallenge.
+
+- These noble gentlemen greatly contributed to this simulator: Amauri Coelho Ferraz, Raphael Pereira Figueiredo da Silva, Evelyn Soares Barbosa and Wagner Ferreira Andrade.
+
+- Kinova Gen3 manipulator xacro model obtained in [ros_kortex](https://github.com/Kinovarobotics/ros_kortex).
 
 ## Teams' Codes
 

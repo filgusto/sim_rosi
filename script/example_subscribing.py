@@ -5,7 +5,8 @@ from sim_rosi.msg import RosiMovementArray
 # subscriber callback
 def callback_armsPosition(msg):
 
-	print(msg)
+	# prints received msg to the user
+	rospy.loginfo(msg)
 
 # node main function
 if __name__ == '__main__':
