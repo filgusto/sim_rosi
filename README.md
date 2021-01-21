@@ -258,7 +258,7 @@ As a rule of thumb, all variables are mapped in the International System of Unit
 
 - These noble gentlemen greatly contributed to this simulator: Amauri Coelho Ferraz, Raphael Pereira Figueiredo da Silva, Evelyn Soares Barbosa and Wagner Ferreira Andrade.
 
-- Kinova Gen3 manipulator xacro model obtained in [ros_kortex](https://github.com/Kinovarobotics/ros_kortex).
+- Kinova Gen3 manipulator xacro     model obtained in [ros_kortex](https://github.com/Kinovarobotics/ros_kortex).
 
 ## Teams' Codes
 
