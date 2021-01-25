@@ -3,7 +3,7 @@ import rospy
 from std_msgs.msg import Header
 from sim_rosi.msg import RosiMovement
 from sim_rosi.msg import RosiMovementArray
-from sim_rosi.msg import ManipulatorJoints
+
 
 # example parameters
 _omega_left = -1
@@ -11,6 +11,7 @@ _omega_right = 1
 _arm_front_rotSpeed = 1
 _arm_rear_rotSpeed = -1
 
+# define here which strategy will generate linear and angular velocities to joints
 def getCommand():
 
 	tractions_sp = [_omega_right, _omega_right, -_omega_left, -_omega_left]
@@ -37,9 +38,6 @@ if __name__=='__main__':
 
 	# eternal loop (runs until second order)
 	while not rospy.is_shutdown():			
-
-		# retrieving current command setpoint
-		traction_sp, arms_sp = getCommand()
 
 		# retrieving current command setpoint
 		traction_sp, arms_sp = getCommand()
