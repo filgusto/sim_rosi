@@ -1,64 +1,62 @@
-# ROSI CHALLENGE - XIV SBAI
+# ROSI Simulator (sim_rosi)
 
-![rosi_banner](https://raw.githubusercontent.com/filRocha/rosiChallenge-sbai2019/master/resources/banner2.png)
+This repository contains the **ROSI** robot simulator implemented in CoppeliaSim® in a ROS package format.
 
-This repository contains the ROS package and V-REP files for running the **ROSI CHALLENGE** simulation. 
+The model is fully operational, providing divers actuators and sensors integrated to the ROS framework. 
+There is also an industrial yard simulation scene for implementation testing in representative scenario.
 
-The final stage of the competition will occur on the **XIV SBAI**, to be held in Ouro Preto (Brazil) in october 2019.
-One may find more info about SBAI in www.sbai2019.com.br.
+ROSI is a [Instituto Tecnológico Vale](http://www.itv.org/) project in partnership with [GSCAR](http://www.coep.ufrj.br/gscar/) group (COPPE/UFRJ).
 
-Additionally, the content here may be beneficial for robotics classes. There is a complete mobile robot model with divers actuators and sensor fully communicating with the ROS framework and an industrial belt conveyor scenario. 
-Feel free to use it for spreading the robotics knowledge in your classes! :)
-
-
-# DISCLAIMER
-
-**V-REP is now CoppeliaSim simulator. The straightforward application of this tutorial may be deprecated**.
-
-**Remember that your solution has to be implemented in the ROS (Robot Operating System) package/nodes format. The code has to be well structured, readable and cataloged as it will be open-source available.**
-
-**DO FORK THIS REPOSITORY only if are willing to propose corrections/improvements to the simulator. YOUR SOLUTION to the challenge has to be created on a CLEAN GITHUB REPOSITORY!**
-
-**On the competition stage, the simulation will run on a server computer, and each teams' package will run on another computer. Be careful not to change any simulation parameters as the official one is the only one considered for the competition.**
-
-**Be sure you have read and understood all of the challenge's rules available in 
-[resources/regulamento_rosiChallenge.pdf](https://github.com/filRocha/rosiChallenge-sbai2019/blob/master/resources/regulamento_rosiChallenge.pdf)**
+The content here may be beneficial for robotics classes and also your research. 
+Feel free to use/modify it for spreading Knowledge in your classes! :)
 
 # Package description
 
 This repository is structured as a ROS package. The folders organization is as follows:
 
-- `config` - Contains the **.yaml** files with simulation parameters. You may change them accordingly to your needs.
+- `config` - Contains the **.yaml** file with simulation parameters. You may change them accordingly to your needs.¹
 
-- `launch` - Contains a ROS launch file example. Notice that **rosi_joy.launch** loads the parameters file from `config` folder.
+- `coppeliaSim_content` - Contains ROSI model and scenes for CoppeliaSim® simulator.
+
+- `launch` - Contains ROS launch files example.
 
 - `msg` - Message files needed to interact with the Rosi simulated model.
 
-- `resources` - General support files.
+- `script` - Example nodes in Python for interacting with the simulated model.
 
-- `script` - Example node in Python to control Rosi using a joystick. Code written with a Xbox 360 wireless joystick. 
-
-- `urdf` - Contains ROSI URDF model.
+- `urdf` - Contains ROSI URDF model description.
 
 - `vrep_content` - Contains the simulation scenes for the challenge. You may load them inside V-REP simulator.
 
+Notes:
+1-Parameters in `simulation_parameters.yaml` only take effect if you call the `load_parameters.launch` launch file prior pressing `play` in the simulation.
+
 # Installation
 
-The simulator was conceived using **Ubuntu 18.4.2**, **ROS Melodic**, and **V-REP 3.6.2 (rev.0)**. Another software versions might work, but they are not recommended nor officially supported for the competition. 
+The simulator was conceived in **Ubuntu 18.04.5 LTS (Bionic Beaver)** OS with
+
+The simulator was conceived using **Ubuntu 18.4.2**, **ROS Melodic**, **CoppeliaSim® 4.1.0 (rev 1) Edu** and **ROS Melodic**. 
+It might work in another software versions though.¹
+
+Notes:
+1-No, never tried it on Windows machines. :P
 
 ## Installation advices
 
-By covention on this installation steps, all boxes starting with a `$` mark means that you should run the command on the terminal. 
+TODO - Refazer os passos na máquina virtual e validar aqui
+
+By covention on this installation steps, all boxes starting with a `$` mark means that you should run the command on a Linux terminal. 
 
 As an example:
 ``` 
 $ sudo apt update
 ```
-The above line means that you should run the command `sudo apt update` on your terminal. **Notice that** the `$` stands for a terminal command input and **do not** belongs to the command line syntax itself.
+The above line means that you should run the command `sudo apt update` on your terminal. 
+**Notice that** the `$` stands for a terminal command input and **do not** belongs to the command line syntax itself.
 
-If you want to directly copy and paste this `README.md` commands on the terminal (the clever way), remember that you **should not** copy the `$` mark, and the keyboard shortcut to paste on the terminal is `CTRL + SHIFT + V`.
+If you want to directly copy and paste this `README.md` commands on the terminal, remember that you **should not** copy the `$` mark, and the keyboard shortcut to paste on the terminal is `CTRL + SHIFT + V`.
 
-The common issues for each step are directly addressed in a **Troubleshooting** remark on the end of the step instructions.
+The common issues for each step are directly addressed in a **Troubleshooting** remark on the end of the specific step instructions.
 
 ## Installation steps
 
@@ -152,7 +150,6 @@ Compile again your `catkin_ws` using
 $ catkin build
 ```
 
-
 **10.** If your compilation runs well, there is now a ros interface and RosVelodyne libraries called `libv_repExtRosInterface.so` and `libv_repExtRosVelodyne.so`, respectively, on `<catkin_ws>/dev/lib/` folder. You must copy it to the V-REP folder:
 ```
 $ cp $ROS_CATKIN_WS/devel/lib/libv_repExtRosInterface.so $VREP_ROOT
@@ -176,26 +173,29 @@ Additionally, if you have a joystick, you can run the `rosi_joy.py` example node
 
 To first run your simulator, do the following:
 
-**1.** Open a new terminal and run `$ roscore` to enable ROSMASTER. You **always** have to run the ROS master before V-REP.
+**1.** Open a new terminal and run `$ roscore` to enable `ROSMASTER`. You **always** have to run the ROS master before CoppeliaSim® (at least if you want things to work properly.)
 
-**2.** In another terminal window, run `$ vrep`. This should work if you have created successfully V-REP alias on `.bashrc`. If the negative case, run it directly using `$ <vrep_folder>/vrep.sh`.
+**2.** In another terminal window, run `$ coppelia_sim` (this should work if you have created successfully CoppeliaSim® alias on `.bashrc`.) 
+In the negative case, run it directly using `$ <coppelia_sim_folder>/coppeliaSim.sh`.
 
-**3.** Go to `File > Open Scene...` and locate the V-REP scenario in `<rosi_defy>/vrep_content/challenge_scenario.ttt`. 
-You have also available the ROSI model that can be directly loaded in another scenario. It can be also found in the V-REP model browser (simulator's left side column).
+- TODO adequar o nome do arquivo a ser aberto
+**3.** Go to `File > Open Scene...` and locate the CoppeliaSim® scenario in `<sim_rosi>/coppeliaSim_content/challenge_scenario.ttt`. 
+You have also available the ROSI model that can be directly loaded in another scenario. It can be also found in the CoppeliaSim® model browser (simulator's left side column).
 
-**4.** Run the simulator by going to `Simulation > Start simulation`. At this point, you should be able to see all ROSI topics running in ROS framework.
+**4.** Start the simulation by going to `Simulation > Start simulation` (or just press the `play` button.) At this point, you should be able to see all ROSI topics appearing in the ROS framework.
 
-**5.** You can find a ROS script example code in `<rosi_defy>/script/rosi_joy.py`. This node lets you control ROSI with a joystick (made with Xbox 360 controller). Besides, it is a good way to see the basics of the ROS<->ROSI interaction.
+**5.** You may find ROS node examples in `<sim_rosi>/script/`. 
 
 
 # Simulation Parameters
 
-The simulation may run slow due to its complexity and amount of running modules. You can tweak some parameters to better adjust the simulation to your code needs.
+The simulation may run slow due to its complexity and amount of running modules in parallel. 
+We encourage turning off functionalities that you do not need in your experiments.
+For that, you can tweak some parameters in the `<sim_rosi>/config/simulation_parameters.yaml` file.
+Parameters are loaded when you call the `<sim_rosi>/launch/load_parameters.launch` prior running the simulation.
 
-Inside the **rosi_defy** package, you may find the parameters in `<rosi_defy>/config/simulation_parameters.yaml`. They are all automatic loaded from the launch file in `<rosi_defy>/launch/rosi_joy.launch`. If you do not load them, all parameters will be set to **true**. Naturally, you can change parameters while running **roscore** using `rosparam set <param_name> <param_desired_value>`.
-
-You can adjust the following flags:
-
+The following flags are available:
+- TODO confirmar os parametros de simulacao
 - `simulation_rendering` - `Boolean` - Controls the rendering of V-REP visualization. Disable it for better performance.
 
 - `velodyne_processing` - `Boolean` - If your code do not rely on Velodyne data, you can disable this sensor here and speed up the simulation.
@@ -208,81 +208,93 @@ You can adjust the following flags:
 
 # ROSI2ROS
 
-This section shows how to interact with the simulated ROSI in ROS framework. It shows the published/subscribed topics, along with its message type and brief comment.
+This section shows how to interact with the simulated ROSI in ROS framework. It shows the published/subscribed topics, along with its message types and brief comments.
+
 The standard is:
 - `/topic_namespace/topic_name` - `<topic_message/Type>` - A brief description of its content.
 
-As a rule of thumb, all variables are mapped in the International System of Units.
+As good systematic boys, all variables are expressed in the International System of Units (SI).
 
-## ROSI publishes to (you receive information from the robot):
+## ROSI model publishes to :
 
-- `/rosi/arms_joints_position` - `<rosi_defy/RosiMovementArray>` - Rosi tracked arms position in \[radians\].
+- `/manipulator/joints_pos_sensor` - `<sim_rosi/ManipulatorJoints>` - The embedded manipulator joints position. 
+
+- `/manipulator/wrist_ft` - `<geometry_msgs/TwistStamped>` - The embedded manipulator Force/Torque sensor output. It gives two vectors of linear and angular forces and torques, respectively. Axis order is **x**, **y**, **z**.
+
+- `/rosi/arms_joints_position` - `<sim_rosi/RosiMovementArray>` - Rosi tracked arms position in \[radians\].
 
 - `/rosi/kinect_joint` - `<std_msgs/Float32>` - Kinect joint position in \[radians\].
 
 - `/sensor/gps` - `<sensor_msgs/NavSatFix>` - Emulated GPS sensor output.
 
+- `/sensor/hokuyo` - `<sim_rosi/HokuyoReading>` - Emulated hokuyo output. It gives a vector of 3D coordinates of detected point with respect to hokuyo.
+
 - `/sensor/imu` - `<sensor_msgs/Imu>` - Emulated IMU sensor output.
 
 - `/sensor/kinect_depth` - `<sensor_msgs/Image>` - Emulated kinect depth image output.
 
+- `/sensor/kinect_info` - `<sensor_msgs/CameraInfo>` - Emulated kinect information.
+  
 - `/sensor/kinect_rgb` - `<sensor_msgs/Image>` - Emulated kinect rgb image output.
 
-- `/sensor/kinect_info` - `<sensor_msgs/CameraInfo>` - Emulated kinect information.
-
-- `/sensor/velodyne` - `<sensor_msgs/PointCloud2>` - Emulated Velodyne output.
-
-- `/sensor/hokuyo` - `<rosi_defy/HokuyoReading>` - Emulated hokuyo output. It gives a vector of 3D coordinates of detected point with respect to hokuyo.
-
-- `/sensor/ur5toolCam` - `<sensor_msgs/Image` - Emulated camera on UR5 tool.
+- `/sensor/manipulator_tool_cam` - `<sensor_msgs/Image` - Emulated camera on the manipulator tool.
 
 - `/simulation/time` - `<std_msgs/Float32>` - V-REP simulation time in \[seconds\]
 
-- `/ur5/jointsPositionCurrentState` - `<rosi_defy/ManipulatorJoints>` - UR-5 robotic manipulator joints current position. 
 
-- `/ur5/forceTorqueSensorOutput` - `<geometry_msgs/TwistStamped>` - UR-5 Force/Torque sensor output. It gives two vector of linear and angular forces and torques, respectively. Axis order is **x**, **y**, **z**.
+- `/velodyne/points2` - `<sensor_msgs/PointCloud2>` - Emulated Velodyne output.
 
-## ROSI subscribes to (you send commands to the robot):
 
-- `/rosi/command_arms_speed` - `<rosi_defy/RosiMovementArray>` - Sets the tracked arms angular velocity in \[radians/s\]. Command limits in \[-0.52, 0.52\] rad/s
+## ROSI subscribes to:
+- TODO reescrever os limites de publicacao
+- `/manipulator/joints_target_command` - `<sim_rosi/ManipulatorJoints>` - Sets the UR-5 joints desired angular position. Each joint has a built-in PID controller. One may find more UR-5 info in [here](https://www.universal-robots.com/media/50588/ur5_en.pdf).
 
-- `/rosi/command_traction_speed` - `<rosi_defy/RosiMovementArray>` - Sets the traction system joint angular velocity in \[radians/s\]. The traction system drives simultaneously both the wheel and the tracks. Command limits in \[-37.76, 37.76\] rad/s.
+- `/rosi/command_arms_speed` - `<sim_rosi/RosiMovementArray>` - Sets the tracked arms angular velocity in \[radians/s\]. Command limits in \[-0.52, 0.52\] rad/s
 
 - `/rosi/command_kinect_joint` - `<std_msgs/Float32>`- Sets the kinect joint angular position set-point. Joint limits are \[-45°,45° \]. It has a built-in PID controller with maximum joint speed of |0.35| rad/s.
 
-- `/ur5/jointsPosTargetCommand` - `<rosi_defy/ManipulatorJoints>` - Sets the UR-5 joints desired angular position. Each joint has a built-in PID controller. One may find more UR-5 info in [here](https://www.universal-robots.com/media/50588/ur5_en.pdf).
+- `/rosi/command_traction_speed` - `<sim_rosi/RosiMovementArray>` - Sets the traction system joint angular velocity in \[radians/s\]. The traction system drives simultaneously both the wheel and the tracks. Command limits in \[-37.76, 37.76\] rad/s.
+
+PS. Topics can be renamed by changing model parameters in Coppeliasim® scene hierachy.
 
 ## Thanks
 
-- We would like to thank **Marc Freese** and the Coppelia Robotics team for releasing the CoppeliaSim for RosiChallenge.
+- We would like to thank **Marc Freese** and the Coppelia Robotics team for releasing and maintaing the amazing CoppeliaSim® simulator.
 
 - These noble gentlemen greatly contributed to this simulator: Amauri Coelho Ferraz, Raphael Pereira Figueiredo da Silva, Evelyn Soares Barbosa and Wagner Ferreira Andrade.
 
-- Kinova Gen3 manipulator xacro     model obtained in [ros_kortex](https://github.com/Kinovarobotics/ros_kortex).
+- Kinova Gen3 manipulator xacro model obtained in [ros_kortex](https://github.com/Kinovarobotics/ros_kortex).
 
-## Teams' Codes
+## ROSI Challenge
 
-The following are the ROSI Challenge finalists' codes:
+The present simulator is based on the **ROSI Challenge** competition repository. 
+Participating teams had to perform autonomous tasks with ROSI in a representative mining port scenario.
+
+The following are the ROSI Challenge finalists' codes (you may be inspired by them):
 
 - **1st - Time IFES Vitória**: https://github.com/AntMol8/Time_Ifes_Vitoria
 - **2nd - Pra Valê**: https://github.com/vinicius-r-silva/Pra_Vale
 - **3rd - AAI Robotics**: https://github.com/ara1557/AAI_robotics
 - **4th - Hofs**: https://github.com/Gustavo-Hofs/hofs_rosi_challenge_2019
 - **5th - PPGEAS - UFSC**: https://github.com/feressalem/rosi_challenge_ppgeas_ufsc
-- **6th ForROS**: https://github.com/raphaellmsousa/ForROS
-- **7th Pyneapple**: https://github.com/DiegoFr75/pyneapple
-- **8th Taura Bots**: https://github.com/alikolling/taura_Rosi_challenge
-- **9th Titãs da Robótica**: https://github.com/jeanpandolfi/TitasdaRoboticaRosiChallenge
+- **6th - ForROS**: https://github.com/raphaellmsousa/ForROS
+- **7th - Pyneapple**: https://github.com/DiegoFr75/pyneapple
+- **8th - Taura Bots**: https://github.com/alikolling/taura_Rosi_challenge
+- **9th - Titãs da Robótica**: https://github.com/jeanpandolfi/TitasdaRoboticaRosiChallenge
 
 We strongly recommend the teams' to maintain their repositories online and public. However, we are not responsible for their content and situation.
+
+Related content: [ROSI Challenge official website](https://www.sbai2019.com.br/rosi-challenge), [original Github repository](https://github.com/filRocha/rosiChallenge-sbai2019), and [news report](http://www.itv.org/noticia/vale-patrocina-desafio-no-14o-simposio-brasileiro-de-automacao-inteligente-sbai/) from the Intstituto Tecnológico Vale website.
+
 
 # I have found something wrong!
 
 Great! Please, open a new **issue** directly on this repository, or send your **pull request**.
 
-If you have any suggestions, comments or compliments, you can reach the official challenge contact: `rosichallenge@gmail.com`
+If you have any suggestions, comments or compliments, you can reach the official challenge contact: `filipe.rocha@coppe.ufr.br`
 
-Doubts about the simulator MUST be treated as an **issue**! They will not be answered via e-mail.
+Doubts about the simulator MUST be treated as an **issue**! Thanks.
 
-## Have FUN!
+# Hey...
+Have fun!
 

@@ -7,7 +7,6 @@ from sim_rosi.msg import ManipulatorJoints
 # define here which strategy will generate linear and angular velocities to joints
 def getCommand():
 
-
     # mounting the joints position array
     arm_joints_target_pos = [0.785, 0.785, 0, 0, 0, 0, 0]
 
