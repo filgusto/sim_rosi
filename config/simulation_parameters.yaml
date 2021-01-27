@@ -1,42 +1,33 @@
  # rosi simulation parameters
- rosi_simulation: 
+ sim_rosi:
 
-  # Simulation Rendering Flag
-  # disable it for faster simulation (but no visualization)
-  # possible values: true, false.
-  simulation_rendering: true
+   sim_config:
 
-  # Velodyne processing flag
-  # disable it for faster simulation (but no Velodyne data)
-  # possible values: true, false.
-  velodyne_processing: false
+     # Simulation rendering
+     # turn it off to disable simulation visualization rendering
+     sim_rendering: false
 
-  # Kinect processing flag
-  # disable it for faster simulation (but no kinect data)
-  # possible values: true, false.
-  kinect_processing: false
+     # Velodyne processing flag
+     # enable it for generating Velodyne data
+     # disable it for faster simulation (but no Velodyne data)
+     # possible values: true, false.
+     velodyne_processing: false
 
-  # Hokuyo processing flag
-  # disable it for faster simulation (but no hokuyo data)
-  # possible values: true, false.
-  hokuyo_processing: false
+     # Kinect processing flag
+     # enable it for generating kinect data
+     # disable it for faster simulation (but no kinect data)
+     # possible values: true, false.
+     kinect_processing: false
 
-  # Hokuyo drawing lines 
-  # enable it for seeing hokuyo lines
-  # ATTENTION: This feature is strictly visual and do not affect velodyne processing
-  # possible values: true, false.
-  hokuyo_lines: false
+     # Hokuyo processing flag
+     # enable it for generating Hokuyo data
+     # disable it for faster simulation (but no hokuyo data)
+     # possible values: true, false.
+     hokuyo_processing: false
 
-  # Camera on UR5 tool processing flag
-  # enable it for processing/publishing the ur5 tool cam
-  # possible values: true, false
-  gen3toolCam_processing: false
+     # Camera on the manipulator tool processing flag
+     # enable it for processing/publishing the manipulator tool cam
+     # possible values: true, false
+     manipulator_toolCam_processing: false
 
-  # Fire enabling
-  # allows to enable/disable the fire
-  fire_rendering: false
 
-  # Changes the kinect message header's time
-  # Enable it for changing to sim.getSimulationTime()
-  # possible values: true (time from Simulation) or false (time from ROS)
-  time_header_getSimTime: false

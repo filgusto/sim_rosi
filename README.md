@@ -33,17 +33,17 @@ Notes:
 
 # Installation
 
-The simulator was conceived in **Ubuntu 18.04.5 LTS (Bionic Beaver)** OS with
+This installation steps considers that you are running a **Ubuntu 18.04.5 LTS (Bionic Beaver)** OS with **ROS Melodic** 
+`full-desktop` install and **CoppeliaSim® 4.1.0 (rev 1) Edu**. It might work in another software versions though. 
+Also, we consider that you are current with Linux and ROS basics.
 
-The simulator was conceived using **Ubuntu 18.4.2**, **ROS Melodic**, **CoppeliaSim® 4.1.0 (rev 1) Edu** and **ROS Melodic**. 
-It might work in another software versions though.¹
+Links for installing [Ubuntu](https://releases.ubuntu.com/18.04/), 
+[ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu). We explaing how to configure CoppeliaSim® later in this text. 
 
-Notes:
-1-No, never tried it on Windows machines. :P
+Section notes:
+1-No, never tried it on Windows machines. Good luck with that. :P
 
 ## Installation advices
-
-TODO - Refazer os passos na máquina virtual e validar aqui
 
 By covention on this installation steps, all boxes starting with a `$` mark means that you should run the command on a Linux terminal. 
 
@@ -62,6 +62,10 @@ The common issues for each step are directly addressed in a **Troubleshooting** 
 
 Follow the steps below to configure your V-REP along with ROS:
 
+**2.** Download **CoppeliaSim® 4.1.0 (rev 1) Edu** from the [Coppelia Robotics website](https://www.coppeliarobotics.com/downloads).
+
+**3.** Unzip CoppeliaSim® (preferentially) to your **home** and rename the folder as `coppelia_sim`. 
+From now on, we will call its folder path as `<coppelia_sim>`, e.g. `<coppelia_sim> == /home/your_user/coppelia_sim/`.
 
 **1.** Clone and download this repository package to your **ROS Workspace src folder** (`../catkin_ws/src`) folder with the name `rosi_defy`:
 
@@ -69,10 +73,19 @@ Follow the steps below to configure your V-REP along with ROS:
 $ git clone https://github.com/filRocha/sbai2019-rosiDefy rosi_defy
 ``` 
 
-**2.** Download **V-REP PRO EDU V3.6.2 rev0** from the Coppelia Robotics website: http://www.coppeliarobotics.com/downloads.html
 
 
-**3.** Unzip it (preferentially) to your **home** folder and rename the folder as `vrep`.
+
+
+
+--------------------
+
+
+
+
+
+
+
 
 
 **4.** Add both the CATKIN_WS and V-REP folder location to your `.bashrc`, an alias to run it, and source the `.bashrc` again: 
