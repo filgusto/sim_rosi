@@ -56,28 +56,193 @@ The above line means that you should run the command `sudo apt update` on your t
 
 If you want to directly copy and paste this `README.md` commands on the terminal, remember that you **should not** copy the `$` mark, and the keyboard shortcut to paste on the terminal is `CTRL + SHIFT + V`.
 
+Also, this symbol `<>` states for absolute path. 
+You have to replace it for the required component path. 
+For instance, if we write `<catkin_ws>` referring to the ROS workspace folder, you replace this stretch by `/home/your_user/wherever_you_put_your_workspace/catkin_ws/`. 
+Easy, right?
+
 The common issues for each step are directly addressed in a **Troubleshooting** remark on the end of the specific step instructions.
 
 ## Installation steps
 
-Follow the steps below to configure your V-REP along with ROS:
+Follow the steps below to configure your ROSI simulator to operate along with ROS:
+
+
+**7.** Install some ROS support packages and required Python 3.8:
+```
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt install python-catkin-tools xsltproc ros-$ROS_DISTRO-brics-actuator ros-$ROS_DISTRO-tf2-sensor-msgs ros-$ROS_DISTRO-joy ros-$ROS_DISTRO-joint-state-publisher xsltproc python3.8 python3-pip
+$ sudo python3 -m pip install xmlschema
+```
+
+
+
+
+**1.** With the `python-catkin-tools` package, we have just installed a new tool for compiling ROS packages: `catkin build`¹.
+If you use `catkin_make` tool, we first have to delete current compiled files within `<catkin_ws>` folder, and then recompile
+it using the new tool.
+
+```
+$ cd <catkin_ws>
+$ catkin clean
+% caktin build
+```
+
+**Note**: We need `catkin build` for properly building the CoppeliaSim® ROS Interface.
+
+
+
+
 
 **2.** Download **CoppeliaSim® 4.1.0 (rev 1) Edu** from the [Coppelia Robotics website](https://www.coppeliarobotics.com/downloads).
 
-**3.** Unzip CoppeliaSim® (preferentially) to your **home** and rename the folder as `coppelia_sim`. 
-From now on, we will call its folder path as `<coppelia_sim>`, e.g. `<coppelia_sim> == /home/your_user/coppelia_sim/`.
 
-**1.** Clone and download this repository package to your **ROS Workspace src folder** (`../catkin_ws/src`) folder with the name `rosi_defy`:
+
+
+**3.** Unzip CoppeliaSim®, put it in a convenient folder, and rename it as `coppelia_sim`, for simplicity.
+
+
+
+
+**1.** Clone and download this repository package to `<catkin_ws>/src/` folder with the name `sim_rosi`:
 
 ```
-$ git clone https://github.com/filRocha/sbai2019-rosiDefy rosi_defy
+$ git clone https://github.com/filRocha/sim_rosi
 ``` 
 
 
 
 
+**4.** Add the following lines to your `.bashrc`. For opening the `.bashrc` file, run `$ nano ~/.bashrc`
+
+```
+export ROS_CATKIN_WS='<catkin_ws>'
+export COPPELIASIM_ROOT_DIR='<coppelia_sim>'
+source <catkin_ws>/devel/setup.bash
+alias coppelia_sim=$COPPELIASIM_ROOT_DIR/coppeliaSim.sh
+```
+
+An then, reload your terminal environment with `$ source ~/.bashrc`.
+
+**Note 1**: Remember to replace the path to your CATKIN_WS and V-REP folder in this command.
+
+**Note 2**: All instructions consider that you use `bash`. If you use `.zsh`, you probably know what to do ;)
 
 
+
+
+**5.** To test CoppeliaSim®, open a new terminal and run `$ coppelia_sim`. 
+You may close it if everything went alright.
+
+**Note**: You have created this command on the last step using the `alias` command on your `.bashrc`. ;)
+
+**Troubleshooting 1**: If you receive an error like `bash: <some_folder>/ccoppeliaSim.sh: No such file or directory`,
+check if the path is correctly set in your `.bashrc`. 
+
+**Troubleshooting 2**: When starting, CoppeliaSim® prints its initialization steps on terminal. 
+If it crashes while starting, try finding some clues there.
+
+
+
+
+**5.** Update your CoppeliaSim® `libPlugin` folder
+```
+$ cd <coppelia_sim>/programming/
+$ rm -rf ./libPlugin
+% git clone https://github.com/CoppeliaRobotics/libPlugin
+```
+
+
+
+
+**6.** Clone recursively the CoppeliaSim®/ROS interface and CoppeliaSim Velodyne2Ros plugin to `<catkin_ws>/src/`:
+```
+$ cd <catkin_ws>/src
+$ git clone --recursive https://github.com/CoppeliaRobotics/simExtROSInterface.git sim_ros_interface
+$ git clone https://github.com/ITVRoC/coppeliasim_plugin_velodyne.git
+```
+
+and checkout the CoppeliaSim®/ROS interface to `Melodic` branch
+```
+$ cd <catkin_ws>/src/sim_ros_interface/
+$ git checkout melodic
+```
+
+Now compile the workspace with `$ catkin build`.
+
+**Note**: take some time to browse those repositories and credit their authors. :)
+
+**Troubleshooting**: If you have a `CMake` version problem, there is a special session describing how to fix it by the
+end of this installation steps.
+
+
+
+
+**9.** Now we reference `sim_rosi` custom messages in the `sim_ros_interface` so the CoppeliaSim® can recognize those messages
+while communicating with ROS. To do so:
+
+9.1 Insert their namespace and names in `<sim_ros_interface>/meta/messages.txt` file:
+```
+$ echo -e "sim_rosi/HokuyoReading\nsim_rosi/ManipulatorJoints\nsim_rosi/RosiMovement\nsim_rosi/RosiMovementArray" >> $ROS_CATKIN_WS/src/sim_ros_interface/meta/messages.txt
+```
+ 
+Now, inform to the `sim_ros_interface` package that it depends on the `sim_rosi` package.
+
+9.2 Open the file `<sim_ros_interface>/package.xml` file and add 
+```
+<depend>sim_rosi</depend>
+```
+after the last `<depend> xxx </depend>` statement.
+
+
+9.3 Open `<sim_ros_interface>/CMakeLists.txt` and add to the proper place:
+
+```
+set(PKG_DEPS
+  ... (many many other packages)
+  sim_rosi
+)
+```
+
+9.4 Compile again your ROS workspace `<catkin_ws>`
+```
+$ catkin build
+```
+
+
+
+
+**10.** If everything went ok, copy generated libraries¹ to your CoppeliaSim folder:
+
+```
+$ cp $ROS_CATKIN_WS/devel/lib/libsimExtROSInterface.so $COPPELIASIM_ROOT_DIR
+$ cp $ROS_CATKIN_WS/devel/lib/libv_repExtRosVelodyne.so $COPPELIASIM_ROOT_DIR
+```
+
+**Note**: This specific step should be done everytime you add new custom messages to the CoppeliaSim® ROS interface.
+
+
+
+
+
+
+**11.** Everything should be set up now. To run the simulation, you have to first start ROSCORE and later open the simulator:
+```
+$ roscore
+$ coppelia_sim
+```
+Open the scene `<rosi_defy>/vrep_content/challenge_scenario.ttt` in V-REP and play it. You should be able to see the simulator topics being published with `rostopic list`. 
+
+Additionally, if you have a joystick, you can run the `rosi_joy.py` example node to see how the communication with the robot works.
+
+**NOTICE** that you have to run the `roscore` **ALWAYS** before `vrep` in order to work. If you stop ROS master, you have to close V-REP and run it all again.
+
+
+
+
+
+
+PAREI AQUI PAREI AQUI
 --------------------
 
 
@@ -86,101 +251,27 @@ $ git clone https://github.com/filRocha/sbai2019-rosiDefy rosi_defy
 
 
 
+### Fixing CMake Version
 
+If you have CMake version problem when trying to compile the CoppeliaSim®/ROS Interface `sim_ros_interface`, try the following:
 
-**4.** Add both the CATKIN_WS and V-REP folder location to your `.bashrc`, an alias to run it, and source the `.bashrc` again: 
-```
-$ echo "export ROS_CATKIN_WS='<path_to_your_catkin_ws_folder>'" >> $HOME/.bashrc
-$ echo "export VREP_ROOT='<path_to_your_vrep_folder>'" >> $HOME/.bashrc
-$ echo "source $ROS_CATKIN_WS/devel/setup.bash" >> $HOME/.bashrc
-$ echo "alias vrep=$VREP_ROOT/vrep.sh" >> ~/.bashrc
-$ source $HOME/.bashrc
-```
-Remember to insert the path to your CATKIN_WS and V-REP folder in this command.
+- Check your CMake version with `$ cmake --version`. You'll need version `>=3.16`.
 
-(All instructions consider that you use `bash`. If you use `.zsh`, you know what to do ;)
+- Go to [this link](https://cmake.org/download/) and download the latest version (or any version `>=3.16`) `.sh` file. 
+For instance, considering version `3.19.3`, the file name is `cmake-3.19.3-Linux-x86_64.sh`. 
+  We'll use this file name from now on.
 
+- Move this binary file to `/opt/`. Run `$ sudo mv ./cmake-3.19.3-Linux-x86_64.sh /opt/`.
 
-**5.** Test the V-REP functionality by running directly on your terminal the following command:
-```
-$ vrep
-```
-(Notice that you have created this command on the last step using the `alias` command on your `.bashrc`)
+- Navigate to `/opt`: `$ cd /opt/`.
 
+- Make the binary executable with `$ sudo chmod +x ./cmake-3.19.3-Linux-x86_64.sh`.
 
-**6.** Clone recursively the V-REP/ROS interface and V-REP Velodyne2Ros plugin to your `catkin_ws/src`:
-```
-$ cd $ROS_CATKIN_WS/src/
-$ git clone --recursive https://github.com/CoppeliaRobotics/v_repExtRosInterface.git vrep_ros_interface
-$ git clone https://github.com/filRocha/vrep_plugin_velodyne.git
-```
-(More information and credits about this interface can be found on its [Github repository](https://github.com/CoppeliaRobotics/v_repExtRosInterface.git)
+- Run it with `$ sudo bash ./cmake-3.19.3-Linux-x86_64.sh*`. You may have to press `Yes` twice.
 
+- Create symbolic links for CMake with `$ sudo ln -s /opt/cmake-3.19.3-Linux-x86_64/bin/* /usr/local/bin`.
 
-
-**7.** Install some support packages:
-```
-$ sudo apt install python-catkin-tools xsltproc ros-$ROS_DISTRO-brics-actuator ros-$ROS_DISTRO-tf2-sensor-msgs ros-$ROS_DISTRO-joy ros-$ROS_DISTRO-joint-state-publisher
-```
-
-
-**8.** We have just installed a new tool for compiling the catkin workspace: `catkin build`. If you use `catkin_make`, you have to clean your workspace and perform a fresh new compilation:
-```
-$ cd $ROS_CATKIN_WS
-$ catkin clean
-$ catkin build
-$ source $HOME/.bashrc
-```
-
-Notice that you may not use `catkin_make` to compile your workspace anymore.
-
-**Troubleshooting**: 
-- The `catkin clean` command just deletes the `..catkin_ws/devel` and `..catkin_ws/build` folders from your ROS Workspace. If the `catkin clean` command returns an error (e.g. the workspace was not correctly indentified), you can just remove those folders **manually**.
-
-**9.** Some messages from our `rosi_defy` package should be referenced in the `vrep_ros_interface` package. To do that:
-
-9.1 Insert their namespace and names in `<vrep_ros_interface>/meta/messages.txt` file:
-```
-$ echo -e "rosi_defy/ManipulatorJoints\nrosi_defy/RosiMovement\nrosi_defy/RosiMovementArray\nrosi_defy/HokuyoReading" >> $ROS_CATKIN_WS/src/vrep_ros_interface/meta/messages.txt
-```
-
-9.2 Tell `vrep_ros_interface`that it depends on the `rosi_defy` package by adding 
-```
-<depend>rosi_defy</depend>
-```
-to `vrep_ros_interface/package.xml`.
-
-9.3 Add `rosi_defy` package dependence on the `vrep_ros_interface/CMakeLists.txt`:
-```
-set(PKG_DEPS
-  ... (many many other packages)
-  rosi_defy
-)
-```
-
-Compile again your `catkin_ws` using
-```
-$ catkin build
-```
-
-**10.** If your compilation runs well, there is now a ros interface and RosVelodyne libraries called `libv_repExtRosInterface.so` and `libv_repExtRosVelodyne.so`, respectively, on `<catkin_ws>/dev/lib/` folder. You must copy it to the V-REP folder:
-```
-$ cp $ROS_CATKIN_WS/devel/lib/libv_repExtRosInterface.so $VREP_ROOT
-$ cp $ROS_CATKIN_WS/devel/lib/libv_repExtRosVelodyne.so $VREP_ROOT
-```
-(Notice that, for further events, every time you add new custom ROS messages to the interface, you have to re-compile this library and re-copy it to `$VREP_ROOT`.
-
-
-**11.** Everything should be set up for now. To run the simulation, you should first (always!) run ROS:
-```
-$ roscore
-$ vrep
-```
-Open the scene `<rosi_defy>/vrep_content/challenge_scenario.ttt` in V-REP and play it. You should be able to see the simulator topics being published with `rostopic list`. 
-
-Additionally, if you have a joystick, you can run the `rosi_joy.py` example node to see how the communication with the robot works.
-
-**NOTICE** that you have to run the `roscore` **ALWAYS** before `vrep` in order to work. If you stop ROS master, you have to close V-REP and run it all again.
+- Test the installation by running again `$ cmake --version`.
 
 # Hello World!
 
