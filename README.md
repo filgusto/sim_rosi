@@ -68,7 +68,7 @@ The common issues for each step are directly addressed in a **Troubleshooting** 
 Follow the steps below to configure your ROSI simulator to operate along with ROS:
 
 
-**7.** Install some ROS support packages and required Python 3.8:
+**1.** Install some ROS support packages and required Python 3.8:
 ```
 $ sudo add-apt-repository ppa:deadsnakes/ppa
 $ sudo apt install python-catkin-tools xsltproc ros-$ROS_DISTRO-brics-actuator ros-$ROS_DISTRO-tf2-sensor-msgs ros-$ROS_DISTRO-joy ros-$ROS_DISTRO-joint-state-publisher xsltproc python3.8 python3-pip
@@ -78,7 +78,7 @@ $ sudo python3 -m pip install xmlschema
 
 
 
-**1.** With the `python-catkin-tools` package, we have just installed a new tool for compiling ROS packages: `catkin build`¹.
+**2.** With the `python-catkin-tools` package, we have just installed a new tool for compiling ROS packages: `catkin build`¹.
 If you use `catkin_make` tool, we first have to delete current compiled files within `<catkin_ws>` folder, and then recompile
 it using the new tool.
 
@@ -94,17 +94,17 @@ $ catkin clean
 
 
 
-**2.** Download **CoppeliaSim® 4.1.0 (rev 1) Edu** from the [Coppelia Robotics website](https://www.coppeliarobotics.com/downloads).
+**3.** Download **CoppeliaSim® 4.1.0 (rev 1) Edu** from the [Coppelia Robotics website](https://www.coppeliarobotics.com/downloads).
 
 
 
 
-**3.** Unzip CoppeliaSim®, put it in a convenient folder, and rename it as `coppelia_sim`, for simplicity.
+**4.** Unzip CoppeliaSim®, put it in a convenient folder, and rename it as `coppelia_sim`, for simplicity.
 
 
 
 
-**1.** Clone and download this repository package to `<catkin_ws>/src/` folder with the name `sim_rosi`:
+**5.** Clone and download this repository package to `<catkin_ws>/src/` folder with the name `sim_rosi`:
 
 ```
 $ git clone https://github.com/filRocha/sim_rosi
@@ -113,7 +113,7 @@ $ git clone https://github.com/filRocha/sim_rosi
 
 
 
-**4.** Add the following lines to your `.bashrc`. For opening the `.bashrc` file, run `$ nano ~/.bashrc`
+**6.** Add the following lines to your `.bashrc`. For opening the `.bashrc` file, run `$ nano ~/.bashrc`
 
 ```
 export ROS_CATKIN_WS='<catkin_ws>'
@@ -131,7 +131,7 @@ An then, reload your terminal environment with `$ source ~/.bashrc`.
 
 
 
-**5.** To test CoppeliaSim®, open a new terminal and run `$ coppelia_sim`. 
+**7.** To test CoppeliaSim®, open a new terminal and run `$ coppelia_sim`. 
 You may close it if everything went alright.
 
 **Note**: You have created this command on the last step using the `alias` command on your `.bashrc`. ;)
@@ -145,7 +145,7 @@ If it crashes while starting, try finding some clues there.
 
 
 
-**5.** Update your CoppeliaSim® `libPlugin` folder
+**8.** Update your CoppeliaSim® `libPlugin` folder
 ```
 $ cd <coppelia_sim>/programming/
 $ rm -rf ./libPlugin
@@ -155,7 +155,7 @@ $ rm -rf ./libPlugin
 
 
 
-**6.** Clone recursively the CoppeliaSim®/ROS interface and CoppeliaSim Velodyne2Ros plugin to `<catkin_ws>/src/`:
+**9.** Clone recursively the CoppeliaSim®/ROS interface and CoppeliaSim Velodyne2Ros plugin to `<catkin_ws>/src/`:
 ```
 $ cd <catkin_ws>/src
 $ git clone --recursive https://github.com/CoppeliaRobotics/simExtROSInterface.git sim_ros_interface
@@ -178,24 +178,26 @@ end of this installation steps.
 
 
 
-**9.** Now we reference `sim_rosi` custom messages in the `sim_ros_interface` so the CoppeliaSim® can recognize those messages
+**10.** Now we reference `sim_rosi` custom messages in the `sim_ros_interface` so the CoppeliaSim® can recognize those messages
 while communicating with ROS. To do so:
 
-9.1 Insert their namespace and names in `<sim_ros_interface>/meta/messages.txt` file:
+
+10.1 Insert their namespace and names in `<sim_ros_interface>/meta/messages.txt` file:
 ```
 $ echo -e "sim_rosi/HokuyoReading\nsim_rosi/ManipulatorJoints\nsim_rosi/RosiMovement\nsim_rosi/RosiMovementArray" >> $ROS_CATKIN_WS/src/sim_ros_interface/meta/messages.txt
 ```
  
 Now, inform to the `sim_ros_interface` package that it depends on the `sim_rosi` package.
 
-9.2 Open the file `<sim_ros_interface>/package.xml` file and add 
+
+10.2 Open the file `<sim_ros_interface>/package.xml` file and add 
 ```
 <depend>sim_rosi</depend>
 ```
 after the last `<depend> xxx </depend>` statement.
 
 
-9.3 Open `<sim_ros_interface>/CMakeLists.txt` and add to the proper place:
+10.3 Open `<sim_ros_interface>/CMakeLists.txt` and add to the proper place:
 
 ```
 set(PKG_DEPS
@@ -204,15 +206,14 @@ set(PKG_DEPS
 )
 ```
 
-9.4 Compile again your ROS workspace `<catkin_ws>`
+
+10.4 Compile again your ROS workspace `<catkin_ws>`
 ```
 $ catkin build
 ```
 
 
-
-
-**10.** If everything went ok, copy generated libraries¹ to your CoppeliaSim folder:
+**11.** If everything went ok, copy generated libraries¹ to your CoppeliaSim folder:
 
 ```
 $ cp $ROS_CATKIN_WS/devel/lib/libsimExtROSInterface.so $COPPELIASIM_ROOT_DIR
@@ -226,7 +227,7 @@ $ cp $ROS_CATKIN_WS/devel/lib/libv_repExtRosVelodyne.so $COPPELIASIM_ROOT_DIR
 
 
 
-**11.** Everything should be set up now. To run the simulation, you have to first start ROSCORE and later open the simulator:
+**12.** Everything should be set up now. To run the simulation, you have to first start ROSCORE and later open the simulator:
 ```
 $ roscore
 $ coppelia_sim
@@ -236,15 +237,6 @@ Open the scene `<rosi_defy>/vrep_content/challenge_scenario.ttt` in V-REP and pl
 Additionally, if you have a joystick, you can run the `rosi_joy.py` example node to see how the communication with the robot works.
 
 **NOTICE** that you have to run the `roscore` **ALWAYS** before `vrep` in order to work. If you stop ROS master, you have to close V-REP and run it all again.
-
-
-
-
-
-
-PAREI AQUI PAREI AQUI
---------------------
-
 
 
 
@@ -273,6 +265,11 @@ For instance, considering version `3.19.3`, the file name is `cmake-3.19.3-Linux
 
 - Test the installation by running again `$ cmake --version`.
 
+
+
+
+
+
 # Hello World!
 
 To first run your simulator, do the following:
@@ -289,6 +286,10 @@ You have also available the ROSI model that can be directly loaded in another sc
 **4.** Start the simulation by going to `Simulation > Start simulation` (or just press the `play` button.) At this point, you should be able to see all ROSI topics appearing in the ROS framework.
 
 **5.** You may find ROS node examples in `<sim_rosi>/script/`. 
+
+
+
+
 
 
 # Simulation Parameters
@@ -331,9 +332,9 @@ As good systematic boys, all variables are expressed in the International System
 
 - `/sensor/gps` - `<sensor_msgs/NavSatFix>` - Emulated GPS sensor output.
 
-- `/sensor/hokuyo` - `<sim_rosi/HokuyoReading>` - Emulated hokuyo output. It gives a vector of 3D coordinates of detected point with respect to hokuyo.
-
 - `/sensor/imu` - `<sensor_msgs/Imu>` - Emulated IMU sensor output.
+
+- `/sensor/hokuyo` - `<sim_rosi/HokuyoReading>` - Emulated hokuyo output. It gives a vector of 3D coordinates of detected point with respect to hokuyo.
 
 - `/sensor/kinect_depth` - `<sensor_msgs/Image>` - Emulated kinect depth image output.
 
@@ -345,12 +346,11 @@ As good systematic boys, all variables are expressed in the International System
 
 - `/simulation/time` - `<std_msgs/Float32>` - V-REP simulation time in \[seconds\]
 
-
 - `/velodyne/points2` - `<sensor_msgs/PointCloud2>` - Emulated Velodyne output.
 
 
 ## ROSI subscribes to:
-- TODO reescrever os limites de publicacao
+
 - `/manipulator/joints_target_command` - `<sim_rosi/ManipulatorJoints>` - Sets the UR-5 joints desired angular position. Each joint has a built-in PID controller. One may find more UR-5 info in [here](https://www.universal-robots.com/media/50588/ur5_en.pdf).
 
 - `/rosi/command_arms_speed` - `<sim_rosi/RosiMovementArray>` - Sets the tracked arms angular velocity in \[radians/s\]. Command limits in \[-0.52, 0.52\] rad/s
