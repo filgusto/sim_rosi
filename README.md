@@ -28,7 +28,7 @@ This repository is structured as a ROS package. The folders organization is as f
 
 - `vrep_content` - Contains the simulation scenes for the challenge. You may load them inside V-REP simulator.
 
-Notes:
+*Notes*:
 1-Parameters in `simulation_parameters.yaml` only take effect if you call the `load_parameters.launch` launch file prior pressing `play` in the simulation.
 
 # Installation
@@ -85,10 +85,10 @@ it using the new tool.
 ```
 $ cd <catkin_ws>
 $ catkin clean
-% caktin build
+$ caktin build
 ```
 
-**Note**: We need `catkin build` for properly building the CoppeliaSim® ROS Interface.
+*Note*: We need `catkin build` for properly building the CoppeliaSim® ROS Interface.
 
 
 
@@ -118,15 +118,15 @@ $ git clone https://github.com/filRocha/sim_rosi
 ```
 export ROS_CATKIN_WS='<catkin_ws>'
 export COPPELIASIM_ROOT_DIR='<coppelia_sim>'
-source <catkin_ws>/devel/setup.bash
+source $ROS_CATKIN_WS/devel/setup.bash
 alias coppelia_sim=$COPPELIASIM_ROOT_DIR/coppeliaSim.sh
 ```
 
 An then, reload your terminal environment with `$ source ~/.bashrc`.
 
-**Note 1**: Remember to replace the path to your CATKIN_WS and V-REP folder in this command.
+*Note 1*: Remember to replace the path to your CATKIN_WS and CoppeliaSim® folder in this command.
 
-**Note 2**: All instructions consider that you use `bash`. If you use `.zsh`, you probably know what to do ;)
+*Note 2*: All instructions consider that you use `bash`. If you use `.zsh`, you probably know what to do ;)
 
 
 
@@ -134,7 +134,7 @@ An then, reload your terminal environment with `$ source ~/.bashrc`.
 **7.** To test CoppeliaSim®, open a new terminal and run `$ coppelia_sim`. 
 You may close it if everything went alright.
 
-**Note**: You have created this command on the last step using the `alias` command on your `.bashrc`. ;)
+*Note*: You have created this command on the last step using the `alias` command on your `.bashrc`. ;)
 
 **Troubleshooting 1**: If you receive an error like `bash: <some_folder>/ccoppeliaSim.sh: No such file or directory`,
 check if the path is correctly set in your `.bashrc`. 
@@ -153,8 +153,6 @@ $ rm -rf ./libPlugin
 ```
 
 
-
-
 **9.** Clone recursively the CoppeliaSim®/ROS interface and CoppeliaSim Velodyne2Ros plugin to `<catkin_ws>/src/`:
 ```
 $ cd <catkin_ws>/src
@@ -170,7 +168,7 @@ $ git checkout melodic
 
 Now compile the workspace with `$ catkin build`.
 
-**Note**: take some time to browse those repositories and credit their authors. :)
+*Note*: take some time to browse those repositories and credit their authors. :)
 
 **Troubleshooting**: If you have a `CMake` version problem, there is a special session describing how to fix it by the
 end of this installation steps.
@@ -220,7 +218,7 @@ $ cp $ROS_CATKIN_WS/devel/lib/libsimExtROSInterface.so $COPPELIASIM_ROOT_DIR
 $ cp $ROS_CATKIN_WS/devel/lib/libv_repExtRosVelodyne.so $COPPELIASIM_ROOT_DIR
 ```
 
-**Note**: This specific step should be done everytime you add new custom messages to the CoppeliaSim® ROS interface.
+*Note*: This specific step should be done everytime you add new custom messages to the CoppeliaSim® ROS interface.
 
 
 
@@ -241,8 +239,6 @@ Additionally, if you have a joystick, you can run the `rosi_joy.py` example node
 
 
 
-
-
 ### Fixing CMake Version
 
 If you have CMake version problem when trying to compile the CoppeliaSim®/ROS Interface `sim_ros_interface`, try the following:
@@ -250,22 +246,20 @@ If you have CMake version problem when trying to compile the CoppeliaSim®/ROS I
 - Check your CMake version with `$ cmake --version`. You'll need version `>=3.16`.
 
 - Go to [this link](https://cmake.org/download/) and download the latest version (or any version `>=3.16`) `.sh` file. 
-For instance, considering version `3.19.3`, the file name is `cmake-3.19.3-Linux-x86_64.sh`. 
+For instance, considering version `3.19.3`, the file name is `cmake-3.19.4-Linux-x86_64.sh`. 
   We'll use this file name from now on.
 
-- Move this binary file to `/opt/`. Run `$ sudo mv ./cmake-3.19.3-Linux-x86_64.sh /opt/`.
+- Move this binary file to `/opt/`. When in its downloaded folder, run `$ sudo mv ./cmake-3.19.4-Linux-x86_64.sh /opt/`.
 
 - Navigate to `/opt`: `$ cd /opt/`.
 
-- Make the binary executable with `$ sudo chmod +x ./cmake-3.19.3-Linux-x86_64.sh`.
+- Make the binary executable with `$ sudo chmod +x ./cmake-3.19.4-Linux-x86_64.sh`.
 
-- Run it with `$ sudo bash ./cmake-3.19.3-Linux-x86_64.sh*`. You may have to press `Yes` twice.
+- Run it with `$ sudo bash ./cmake-3.19.4-Linux-x86_64.sh`. You may have to press `Yes` twice.
 
-- Create symbolic links for CMake with `$ sudo ln -s /opt/cmake-3.19.3-Linux-x86_64/bin/* /usr/local/bin`.
+- Create symbolic links for CMake with `$ sudo ln -s /opt/cmake-3.19.4-Linux-x86_64/bin/* /usr/local/bin`.
 
 - Test the installation by running again `$ cmake --version`.
-
-
 
 
 
