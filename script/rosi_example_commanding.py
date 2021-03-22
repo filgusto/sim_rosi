@@ -6,10 +6,10 @@ from sim_rosi.msg import RosiMovementArray
 
 
 # example parameters
-_omega_left = -1
-_omega_right = 1
-_arm_front_rotSpeed = 1
-_arm_rear_rotSpeed = -1
+_omega_left = 1
+_omega_right = -1
+_arm_front_rotSpeed = 0
+_arm_rear_rotSpeed = 0
 
 # define here which strategy will generate linear and angular velocities to joints
 def getCommand():
@@ -89,6 +89,7 @@ if __name__=='__main__':
 
 
 		# -- Publishing both command messages
+		print(tractions_command_list)
 		pub_traction.publish(tractions_command_list)
 		pub_arms.publish(arms_command_list)
 
