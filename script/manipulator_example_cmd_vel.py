@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import rospy
 import numpy as np
 from std_msgs.msg import Header
@@ -8,7 +8,8 @@ from sim_rosi.msg import ManipulatorJoints
 def getCommand():
 
     # mounting the joints position array
-    arm_joints_target_vel = [0, 0, 0, 0 ,0 , -0.0349, 5*0.0349]
+    #arm_joints_target_vel = [0, 0, 0, 0 ,0 , -10*0.0175, 0]
+    arm_joints_target_vel = [0, 0, 0, 0 ,0 , 0, 0]
 
     return arm_joints_target_vel
 
@@ -22,7 +23,7 @@ if __name__=='__main__':
     rospy.loginfo('manipulator_example_cmd_vel node started')
 
     # registering publisher
-    pub_arm_cmd = rospy.Publisher('/manipulator/cmd/joints_vel_target', ManipulatorJoints, queue_size=1)
+    pub_arm_cmd = rospy.Publisher('/manipulator/cmd/vel_target_joints', ManipulatorJoints, queue_size=1)
 
     # defining eternal loop rate frequency
     node_sleep_rate = rospy.Rate(5)
