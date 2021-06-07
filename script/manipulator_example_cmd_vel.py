@@ -9,7 +9,7 @@ def getCommand():
 
     # mounting the joints position array
     #arm_joints_target_vel = [0, 0, 0, 0 ,0 , -10*0.0175, 0]
-    arm_joints_target_vel = [0.7854, 0, 0, 0 ,0 , 0, -0.7854]
+    arm_joints_target_vel = [-0.7854, 0, 0, 0 ,0 , 0, 0]
 
     return arm_joints_target_vel
 

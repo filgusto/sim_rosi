@@ -7,10 +7,10 @@ from sim_rosi.msg import RosiMovementArray
 from sim_rosi.msg import ManipulatorJoints
 
 # example parameters
-_omega_left = 0
-_omega_right = 0
-_arm_front_rotSpeed = 1
-_arm_rear_rotSpeed = -1
+_omega_left = 1
+_omega_right = -1
+_arm_front_rotSpeed = 0
+_arm_rear_rotSpeed = 0
 
 class RosiCommanding():
 
@@ -21,11 +21,11 @@ class RosiCommanding():
 		rospy.loginfo('rosi_command_example node started')
 
 		# registering to publishers
-		self.pub_traction = rospy.Publisher('/rosi/command_traction_speed', RosiMovementArray, queue_size=1)
-		self.pub_arms = rospy.Publisher('/rosi/command_arms_speed', RosiMovementArray, queue_size=1)
+		self.pub_traction = rospy.Publisher('/rosi/cmd/speed_traction', RosiMovementArray, queue_size=1)
+		self.pub_arms = rospy.Publisher('/rosi/cmd/speed_arms', RosiMovementArray, queue_size=1)
 
 		# registering to subscribers
-		self.sub_arms_positions = rospy.Subscriber('/rosi/arms_joints_position', RosiMovementArray, self.callback_arms_position)
+		self.sub_arms_positions = rospy.Subscriber('/rosi/sensor/pos_arms', RosiMovementArray, self.callback_arms_position)
 
 		# defining eternal loop rate frequency
 		node_sleep_rate = rospy.Rate(10)
