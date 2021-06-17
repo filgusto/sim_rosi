@@ -2,8 +2,7 @@
 import rospy
 import numpy as np
 from sim_rosi.msg import RosiMovement
-from sim_rosi.msg import RosiMovementArray
-from sim_rosi.msg import ManipulatorJoints
+from sim_rosi.msg import RosiMovementHeader
 from sensor_msgs.msg import Joy
 
 class RosiNodeClass():
@@ -20,6 +19,8 @@ class RosiNodeClass():
 
 	# class constructor
 	def __init__(self):
+		# sends a message to the user
+		rospy.loginfo('rosi_joy node started')
 
 		# initializing some attributes
 		self.omega_left = 0
@@ -30,12 +31,9 @@ class RosiNodeClass():
 		# computing the kinematic A matrix
 		self.kin_matrix_A = self.compute_kinematicAMatrix(self.var_lambda, self.wheel_radius, self.ycir)
 
-		# sends a message to the user
-		rospy.loginfo('Rosi_joy node started')
-
 		# registering to publishers
-		self.pub_traction = rospy.Publisher('/rosi/command_traction_speed', RosiMovementArray, queue_size=1)
-		self.pub_arm = rospy.Publisher('/rosi/command_arms_speed', RosiMovementArray, queue_size=1)
+		self.pub_traction = rospy.Publisher('/rosi/cmd/speed_traction', RosiMovementHeader, queue_size=1)
+		self.pub_arm = rospy.Publisher('/rosi/cmd/speed_arms', RosiMovementHeader, queue_size=1)
 
 		# registering to subscribers
 		self.sub_joy = rospy.Subscriber('/joy', Joy, self.callback_Joy)
@@ -43,8 +41,85 @@ class RosiNodeClass():
 		# defining the eternal loop frequency
 		node_sleep_rate = rospy.Rate(10)
 
+		rospy.spin()
+
+	# ---- Support Methods --------
+	# -- Method for compute the skid-steer A kinematic matrix
+	@staticmethod
+	def compute_kinematicAMatrix(var_lambda, wheel_radius, ycir):
+
+		# kinematic A matrix 
+		matrix_A = np.array([[var_lambda*wheel_radius/2, var_lambda*wheel_radius/2],
+							[(var_lambda*wheel_radius)/(2*ycir), -(var_lambda*wheel_radius)/(2*ycir)]])
+
+		return matrix_A
+
+
+	# joystick callback function
+	def callback_Joy(self, msg):
+
+		# receives current rostime
+		time_ros = rospy.get_rostime()
+
+		# receiving and treating commands
+		j_vel_lin = msg.axes[1]
+		j_vel_ang = -1 * msg.axes[0]
+		j_arm_cmd = msg.axes[4]
+		j_arms_s = [1 if msg.axes[5] == -1 else 0, msg.buttons[5], 1 if msg.axes[2] == -1 else 0, msg.buttons[4]]
+
+		''' Treating traction command'''
+
+		# computing desired linear and angular velocities of the platform
+		des_vel_linear_x = self.max_translational_speed * j_vel_lin
+		des_vel_angular_z = self.max_rotational_speed * j_vel_ang
+
+		# b matrix
+		b = np.array([[des_vel_linear_x], [des_vel_angular_z]])
+
+		# finds the joints control
+		x = np.linalg.lstsq(self.kin_matrix_A, b, rcond=-1)[0]
+
+		# query the sides velocities and converts to rad/s
+		omega_right = np.ndarray.tolist(np.deg2rad(x[0]))[0]
+		omega_left = np.ndarray.tolist(np.deg2rad(x[1]))[0]
+
+		# mouting traction cmd message
+		cmd_traction = RosiMovementHeader()
+		cmd_traction.header.stamp = time_ros
+		cmd_traction.header.frame_id = 'rosi'
+		cmd_traction.nodeID = [1, 2, 3, 4]
+		cmd_traction.joint_var = [-omega_right, -omega_right, omega_left, omega_left]
+		self.pub_traction.publish(cmd_traction)
+
+
+		''' Treating arms command'''
+
+		# computing rotational arms speed
+		arm_rot_speed = j_arm_cmd * self.max_arms_rotational_speed
+
+		# mounting the np  command list
+		cmd_list = np.array([j_arms_s, 4*[arm_rot_speed]])
+		cmd_list = np.prod(cmd_list, axis=1)
+
+		# PAREI AQUI PAREI AQUI
+
+		print(cmd_list)
+
+
+
+
+
+
 		# eternal loop (until second order)
+'''
 		while not rospy.is_shutdown():
+
+			# msg to the usr
+			rospy.loginfo('hello')
+
+			# sleeps for a while
+			node_sleep_rate.sleep()
+
 
 			arm_command_list = RosiMovementArray()
 			traction_command_list = RosiMovementArray()
@@ -86,8 +161,7 @@ class RosiNodeClass():
 			self.pub_arm.publish(arm_command_list)		
 			self.pub_traction.publish(traction_command_list)
 
-			# sleeps for a while
-			node_sleep_rate.sleep()
+			
 
 		# infinite loop
 		#while not rospy.is_shutdown():
@@ -96,74 +170,18 @@ class RosiNodeClass():
 		# enter in rospy spin
 		#rospy.spin()
 
-	# joystick callback function
-	def callback_Joy(self, msg):
 
-		# saving joy commands
-		axes_lin = msg.axes[1]
-		axes_ang = msg.axes[0]
-		trigger_left = msg.axes[2]
-		trigger_right = msg.axes[5]
-		button_L = msg.buttons[4]
-		button_R = msg.buttons[5]
+	
+		
+		'''	
+	
 
-		# Treats axes deadband
-		if axes_lin < 0.15 and axes_lin > -0.15:
-			axes_lin = 0
-
-		if axes_ang < 0.15 and axes_ang > -0.15:
-			axes_ang = 0
-
-		# treats triggers range
-		trigger_left = ((-1 * trigger_left) + 1) / 2
-		trigger_right = ((-1 * trigger_right) + 1) / 2
-
-		# computing desired linear and angular of the robot
-		vel_linear_x = self.max_translational_speed * axes_lin
-		vel_angular_z = self.max_rotational_speed * axes_ang
-
-		# -- computes traction command - kinematic math
-
-		# b matrix
-		b = np.array([[vel_linear_x],[vel_angular_z]])
-
-		# finds the joints control
-		x = np.linalg.lstsq(self.kin_matrix_A, b, rcond=-1)[0]
-
-		# query the sides velocities
-		self.omega_right = np.deg2rad(x[0][0])
-		self.omega_left = np.deg2rad(x[1][0])
-
-		# -- computes arms command
-		# front arms
-		if button_R == 1:
-			self.arm_front_rotSpeed = self.max_arms_rotational_speed * trigger_right
-		else:
-			self.arm_front_rotSpeed = -1 * self.max_arms_rotational_speed * trigger_right
-
-		# rear arms
-		if button_L == 1:
-			self.arm_rear_rotSpeed = -1 * self.max_arms_rotational_speed * trigger_left
-		else:
-			self.arm_rear_rotSpeed = self.max_arms_rotational_speed * trigger_left
-			
-	# ---- Support Methods --------
-
-	# -- Method for compute the skid-steer A kinematic matrix
-	@staticmethod
-	def compute_kinematicAMatrix(var_lambda, wheel_radius, ycir):
-
-		# kinematic A matrix 
-		matrix_A = np.array([[var_lambda*wheel_radius/2, var_lambda*wheel_radius/2],
-							[(var_lambda*wheel_radius)/(2*ycir), -(var_lambda*wheel_radius)/(2*ycir)]])
-
-		return matrix_A
 
 # instaciate the node
 if __name__ == '__main__':
 
 	# initialize the node
-	rospy.init_node('rosi_example_node', anonymous=True)
+	rospy.init_node('rosi_joy', anonymous=True)
 
 	# instantiate the class
 	try:
