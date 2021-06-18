@@ -8,14 +8,18 @@ from sensor_msgs.msg import Joy
 class RosiNodeClass():
 
 	# class attributes
-	max_translational_speed = 5 # in [m/s]
+	max_translational_speed = 20 # in [m/s]
 	max_rotational_speed = 10 # in [rad/s]
 	max_arms_rotational_speed = 0.52 # in [rad/s]
 
 	# how to obtain these values? see Mandow et al. COMPLETE THIS REFERENCE
 	var_lambda = 0.965
-	wheel_radius = 0.1324
+	wheel_radius = 0.13
 	ycir = 0.531
+
+	# msg variables
+	msg_cmd_traction = {'nodeID': [], 'joint_var': []}
+	msg_cmd_arms = {'nodeID': [], 'joint_var': []}
 
 	# class constructor
 	def __init__(self):
@@ -41,7 +45,34 @@ class RosiNodeClass():
 		# defining the eternal loop frequency
 		node_sleep_rate = rospy.Rate(10)
 
-		rospy.spin()
+		# true loop
+		while not rospy.is_shutdown():
+
+			# receiving ROS time
+			time_ros = rospy.get_rostime()
+
+			# mounting traction cmd message
+			pub_traction_msg = RosiMovementHeader()
+			pub_traction_msg.header.stamp = time_ros
+			pub_traction_msg.header.frame_id = 'rosi'
+			pub_traction_msg.nodeID = self.msg_cmd_traction['nodeID']
+			pub_traction_msg.joint_var = self.msg_cmd_traction['joint_var']
+
+			# publishing traction message
+			self.pub_traction.publish(pub_traction_msg)
+
+			# mounting arms cmd message
+			pub_arms_msg = RosiMovementHeader()
+			pub_arms_msg.header.stamp = time_ros
+			pub_arms_msg.header.frame_id = 'rosi'
+			pub_arms_msg.nodeID = self.msg_cmd_arms['nodeID']
+			pub_arms_msg.joint_var = self.msg_cmd_arms['joint_var']
+
+			# publishing arms message
+			self.pub_arm.publish(pub_arms_msg)
+
+			# sleep for a while
+			node_sleep_rate.sleep()
 
 	# ---- Support Methods --------
 	# -- Method for compute the skid-steer A kinematic matrix
@@ -63,7 +94,7 @@ class RosiNodeClass():
 
 		# receiving and treating commands
 		j_vel_lin = msg.axes[1]
-		j_vel_ang = -1 * msg.axes[0]
+		j_vel_ang = msg.axes[0]
 		j_arm_cmd = msg.axes[4]
 		j_arms_s = [1 if msg.axes[5] == -1 else 0, msg.buttons[5], 1 if msg.axes[2] == -1 else 0, msg.buttons[4]]
 
@@ -83,13 +114,9 @@ class RosiNodeClass():
 		omega_right = np.ndarray.tolist(np.deg2rad(x[0]))[0]
 		omega_left = np.ndarray.tolist(np.deg2rad(x[1]))[0]
 
-		# mouting traction cmd message
-		cmd_traction = RosiMovementHeader()
-		cmd_traction.header.stamp = time_ros
-		cmd_traction.header.frame_id = 'rosi'
-		cmd_traction.nodeID = [1, 2, 3, 4]
-		cmd_traction.joint_var = [-omega_right, -omega_right, omega_left, omega_left]
-		self.pub_traction.publish(cmd_traction)
+		# populating message class attribute
+		self.msg_cmd_traction['nodeID'] = [1, 2, 3, 4]
+		self.msg_cmd_traction['joint_var'] = [-omega_right, -omega_right, omega_left, omega_left] # inverts omega_right considering rosi mountage
 
 
 		''' Treating arms command'''
@@ -97,20 +124,12 @@ class RosiNodeClass():
 		# computing rotational arms speed
 		arm_rot_speed = j_arm_cmd * self.max_arms_rotational_speed
 
-		# mounting the np  command list
-		cmd_list = np.array([j_arms_s, 4*[arm_rot_speed]])
-		cmd_list = np.prod(cmd_list, axis=1)
-
-		# PAREI AQUI PAREI AQUI
-
-		print(cmd_list)
+		# populating message class attribute
+		self.msg_cmd_arms['nodeID'] = [1, 2, 3, 4]
+		self.msg_cmd_arms['joint_var'] = [a*b for a, b in zip(j_arms_s,
+															  [arm_rot_speed, -arm_rot_speed, -arm_rot_speed, arm_rot_speed])]
 
 
-
-
-
-
-		# eternal loop (until second order)
 '''
 		while not rospy.is_shutdown():
 
