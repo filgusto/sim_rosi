@@ -10,7 +10,7 @@ class RosiNodeClass():
 	# class attributes
 	max_translational_speed = 20 # in [m/s]
 	max_rotational_speed = 10 # in [rad/s]
-	max_arms_rotational_speed = 0.52 # in [rad/s]
+	max_arms_rotational_speed = 1.5*0.52 # in [rad/s]
 
 	# how to obtain these values? see Mandow et al. COMPLETE THIS REFERENCE
 	var_lambda = 0.965
@@ -36,8 +36,8 @@ class RosiNodeClass():
 		self.kin_matrix_A = self.compute_kinematicAMatrix(self.var_lambda, self.wheel_radius, self.ycir)
 
 		# registering to publishers
-		self.pub_traction = rospy.Publisher('/rosi/cmd/speed_traction', RosiMovementHeader, queue_size=1)
-		self.pub_arm = rospy.Publisher('/rosi/cmd/speed_arms', RosiMovementHeader, queue_size=1)
+		self.pub_traction = rospy.Publisher('/rosi/cmd/traction_speed', RosiMovementHeader, queue_size=1)
+		self.pub_arm = rospy.Publisher('/rosi/cmd/arms_speed', RosiMovementHeader, queue_size=1)
 
 		# registering to subscribers
 		self.sub_joy = rospy.Subscriber('/joy', Joy, self.callback_Joy)

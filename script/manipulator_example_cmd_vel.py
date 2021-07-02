@@ -1,20 +1,21 @@
 #!/usr/bin/env python
+import sys
 import rospy
 import numpy as np
 from std_msgs.msg import Header
 from sim_rosi.msg import ManipulatorJoints
 
+# defining parameter
+_rot_speed = -0.2 * 0.7854
+
 # define here which strategy will generate linear and angular velocities to joints
-def getCommand():
+def getCommand(rot_joints):
+    # mounts a rotational speed target vel array based on input list selector
+    #print(rot_joints)
+    return [a*_rot_speed for a in rot_joints]
 
-    # mounting the joints position array
-    #arm_joints_target_vel = [0, 0, 0, 0 ,0 , -10*0.0175, 0]
-    arm_joints_target_vel = [-0.7854, 0, 0, 0 ,0 , 0, 0]
-
-    return arm_joints_target_vel
-
-# main script-
-if __name__=='__main__':
+# node definition
+def node_fcn(rot_joints):
 
     # initialize node
     rospy.init_node('manipulator_example_cmd_vel', anonymous=True)
@@ -26,13 +27,13 @@ if __name__=='__main__':
     pub_arm_cmd = rospy.Publisher('/manipulator/cmd/vel_target_joints', ManipulatorJoints, queue_size=1)
 
     # defining eternal loop rate frequency
-    node_sleep_rate = rospy.Rate(5)
+    node_sleep_rate = rospy.Rate(2)
 
     # eternal loop
     while not rospy.is_shutdown():
 
         # retrieving command setpoint data
-        msg_data_arr = getCommand()
+        msg_data_arr = getCommand(rot_joints)
 
         # creating pub msg header
         msg_header = Header()
@@ -52,6 +53,26 @@ if __name__=='__main__':
 
         # sleeps node
         node_sleep_rate.sleep()
+
+# main script-
+if __name__=='__main__':
+
+    # calling function
+    if len(sys.argv) < 2:
+        print('received no argument')
+
+        # calling node
+        node_fcn([0, 0, 0, 0, 0, 0, 0])
+    else:
+        print('argument received')
+
+        # converting input from str to list of numbers
+        l_in = sys.argv[1]
+        l_in = list(map(int, [l_in[1], l_in[3], l_in[5], l_in[7], l_in[9], l_in[11], l_in[13]]))
+
+        # calling node
+        node_fcn(l_in)
+
 
 
 
