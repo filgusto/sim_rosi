@@ -1,5 +1,8 @@
 <launch>
 
+    <!-- Setting arms commanding ros param -->
+    <param name="rosi_joy_arms_cmd" type="bool" value="false" />
+
 	<!-- running the joystick node -->
 	<node name="joy_node" pkg="joy" type="joy_node" respawn="true" />
 

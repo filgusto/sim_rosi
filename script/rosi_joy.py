@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 import rospy
 import numpy as np
 from sim_rosi.msg import RosiMovement
@@ -23,8 +24,10 @@ class RosiNodeClass():
 
 	# class constructor
 	def __init__(self):
-		# sends a message to the user
-		rospy.loginfo('rosi_joy node started')
+
+		# receiving ros parameters
+		_param_joy_arms_cmd = rospy.get_param("/rosi_joy_arms_cmd", 'true')
+		rospy.loginfo("[PARAM] /rosi_joy_arms: " + str(_param_joy_arms_cmd))
 
 		# initializing some attributes
 		self.omega_left = 0
@@ -61,15 +64,17 @@ class RosiNodeClass():
 			# publishing traction message
 			self.pub_traction.publish(pub_traction_msg)
 
-			# mounting arms cmd message
-			pub_arms_msg = RosiMovementHeader()
-			pub_arms_msg.header.stamp = time_ros
-			pub_arms_msg.header.frame_id = 'rosi'
-			pub_arms_msg.nodeID = self.msg_cmd_arms['nodeID']
-			pub_arms_msg.joint_var = self.msg_cmd_arms['joint_var']
+			# only operates arms if correct param is set
+			if _param_joy_arms_cmd:
+				# mounting arms cmd message
+				pub_arms_msg = RosiMovementHeader()
+				pub_arms_msg.header.stamp = time_ros
+				pub_arms_msg.header.frame_id = 'rosi'
+				pub_arms_msg.nodeID = self.msg_cmd_arms['nodeID']
+				pub_arms_msg.joint_var = self.msg_cmd_arms['joint_var']
 
-			# publishing arms message
-			self.pub_arm.publish(pub_arms_msg)
+				# publishing arms message
+				self.pub_arm.publish(pub_arms_msg)
 
 			# sleep for a while
 			node_sleep_rate.sleep()
@@ -193,13 +198,12 @@ class RosiNodeClass():
 	
 		
 		'''	
-	
 
-
-# instaciate the node
+# starting the node
 if __name__ == '__main__':
 
 	# initialize the node
+	rospy.loginfo("RosiJoy node started.")
 	rospy.init_node('rosi_joy', anonymous=True)
 
 	# instantiate the class

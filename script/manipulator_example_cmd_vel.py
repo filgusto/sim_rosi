@@ -1,3 +1,5 @@
+# Zsh calling with input example:
+#$ rosrun sim_rosi manipulator_example_cmd_vel.py '[0,0,0,0,0,0,0]'
 #!/usr/bin/env python
 import sys
 import rospy
@@ -59,12 +61,12 @@ if __name__=='__main__':
 
     # calling function
     if len(sys.argv) < 2:
-        print('received no argument')
+        rospy.loginfo('received no argument')
 
         # calling node
         node_fcn([0, 0, 0, 0, 0, 0, 0])
     else:
-        print('argument received')
+        rospy.loginfo('argument received')
 
         # converting input from str to list of numbers
         l_in = sys.argv[1]
